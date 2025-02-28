@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+# Student-dashboard
+=======
+>>>>>>> fd75e33 (readme file)
 # Vite & HeroUI Template
 
 This is a template for creating applications using Vite and HeroUI (v2).
@@ -48,3 +54,7 @@ After modifying the `.npmrc` file, you need to run `pnpm install` again to ensur
 ## License
 
 Licensed under the [MIT license](https://github.com/frontio-ai/vite-template/blob/main/LICENSE).
+<<<<<<< HEAD
+=======
+>>>>>>> 9a61932 (Added Login page)
+>>>>>>> fd75e33 (readme file)
