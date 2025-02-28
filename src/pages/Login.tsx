@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input } from '@heroui/react';
 import { auth } from './firebaseconfiguration';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
-const Login: React.FC = () => {
+
+const Login: React.FC = () => {      
+    const navigate = useNavigate();
     const [log, setLog] = useState("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -28,6 +31,7 @@ const Login: React.FC = () => {
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
                 alert("Logged in successfully!");
+                navigate('/dashboard')
             }
         } catch (err: any) {
             setError(err.message);

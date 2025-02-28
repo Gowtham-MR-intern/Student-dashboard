@@ -1,17 +1,20 @@
 import React from "react";
-import Navbar from '../components/navbar'
+import Table from '../components/Table'
+import Sidebar from '../components/Sidebar'
 
-
-const index:React.FC = () => {
+const Dashboard:React.FC = () => {
   return (
     <>
-    <Navbar />
-    
-    <div className="flex h-screen justify-center items-center">
-     <h1 className="text-3xl text-green-500">Welcome to the homepage!</h1>
-    </div>
+      <div className="w-full flex h-screen">
+        <Sidebar />
+        <div className="w-full px-10 py-6">
+          <h1 className="text-2xl font-bold">Good Morning...</h1>
+          <p className="text-xs text-gray-500 font-sans mt-1 mb-6">Welcome to Study Track Dashboard</p>
+          <Table/>
+        </div>
+      </div>
     </>
   )
 }
 
-export default index
+export default Dashboard;
