@@ -1,5 +1,6 @@
 import React from "react";
-import Table from '../components/Table'
+import { Outlet } from "react-router-dom";
+
 import Sidebar from '../components/Sidebar'
 
 const Dashboard:React.FC = () => {
@@ -10,7 +11,7 @@ const Dashboard:React.FC = () => {
         <div className="w-full px-10 py-6">
           <h1 className="text-2xl font-bold">Good Morning...</h1>
           <p className="text-xs text-gray-500 font-sans mt-1 mb-6">Welcome to Study Track Dashboard</p>
-          <Table/>
+          <Outlet />
         </div>
       </div>
     </>

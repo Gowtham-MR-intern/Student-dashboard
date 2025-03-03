@@ -17,6 +17,7 @@ import {
   Pagination,
   Selection,
   SortDescriptor,
+  Spinner
 } from "@heroui/react";
 import { db } from "../pages/firebaseconfiguration";
 import { capitalize } from "lodash";
@@ -169,6 +170,9 @@ export default function StudentTable() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStudent, setCurrentStudent] = useState<Student | null>(null);
 
+  const [isLoading,setIsLoading] = useState(true);
+
+  
   useEffect(() => {
     const fetchStudents = async () => {
       const querySnapshot = await getDocs(collection(db, "students"));
@@ -176,16 +180,19 @@ export default function StudentTable() {
           id: doc.id,
           ...doc.data()
         } as Student));
+
       setStudents(studentsData);
+      setIsLoading(false);
       // console.log(studentsData);
     };
     fetchStudents();
   }, []);
-
+  
 
   const addStudent = async (student: Omit<Student, "id">) => {
     const docRef = await addDoc(collection(db, "students"), student);
     setStudents([...students, { id: docRef.id, ...student }]);
+
   };
 
   const deleteStudent = async (id: string) => {
@@ -315,6 +322,7 @@ export default function StudentTable() {
       setPage(1);
     } else {
       setFilterValue("");
+      setPage(1); 
     }
   }, []);
 
@@ -322,7 +330,7 @@ export default function StudentTable() {
     setFilterValue("");
     setPage(1);
   }, []);
-
+  
   const topContent = React.useMemo(() => {
     return (
       <div className="flex flex-col gap-4">
@@ -418,6 +426,7 @@ export default function StudentTable() {
             ? "All items selected"
             : `${selectedKeys.size} of ${filteredItems.length} selected`}
         </span>
+    
         <Pagination
           isCompact
           showControls
@@ -447,7 +456,7 @@ export default function StudentTable() {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "max-h-[382px]",
+        wrapper: "max-h-[382px] h-[382px]",
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
@@ -468,7 +477,7 @@ export default function StudentTable() {
         </TableColumn>
         )}
       </TableHeader>
-      <TableBody emptyContent={"No students found"} items={sortedItems}>
+      <TableBody emptyContent={"No students found"} items={sortedItems}  isLoading={isLoading} loadingContent={<Spinner label="Loading..." />}>
         {(item) => (
         <TableRow key={item.id}>
           {(columnKey) => <TableCell>{renderCell(item, columnKey as string)}</TableCell>}

@@ -4,9 +4,9 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Button,
   Input,
+  Form,
   Select,
   SelectItem,
 } from "@heroui/react";
@@ -45,15 +45,18 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ isOpen, onClose, onAd
       setEmail(studentData.email);
       setAddress(studentData.address);
       setIsActive(studentData.isActive);
-    } else {
-      setName("");
-      setGender("");
-      setPhone("");
-      setEmail("");
-      setAddress("");
-      setIsActive(true);
+    } 
+    else {
+      if(isOpen){
+        setName("");
+        setGender("");
+        setPhone("");
+        setEmail("");
+        setAddress("");
+        setIsActive(true);
+      }
     }
-  }, [studentData]);
+  }, [studentData,isOpen]);
 
   const handleAddStudent = async(event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -78,7 +81,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ isOpen, onClose, onAd
           <>
             <ModalHeader className="flex flex-col gap-1">{studentData ? "Edit Student" : "Add New Student"}</ModalHeader>
             <ModalBody>
-              <form onSubmit={handleAddStudent} className="flex flex-col gap-2">
+              <Form onSubmit={handleAddStudent} className="flex flex-col gap-2">
               <Input
                 label="Name"
                 placeholder="Enter your name"
@@ -134,18 +137,19 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ isOpen, onClose, onAd
                 />
                 Active
               </label>
-              <button
-                type="submit"
-                className="bg-[#33a5a0] text-white mt-2 mx-auto p-2 rounded-md hover:bg-blue-700 transition w-[120px]">
-                Submit
-              </button>
-              </form>
+              <div className="ml-auto">
+                <Button
+                  type="submit"
+                  variant="flat"
+                  className="bg-[#33a5a0] text-white mt-2 mx-4 transition">
+                  Submit
+                </Button>
+                <Button color="danger" variant="flat" onPress={onClose}>
+                  Close
+                </Button>
+              </div>
+              </Form>
             </ModalBody>
-            <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
           </>
         )}
       </ModalContent>

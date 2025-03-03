@@ -1,50 +1,98 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Input } from '@heroui/react';
+import { Button, Form, Input, addToast, ToastProvider } from '@heroui/react';
 import { auth } from './firebaseconfiguration';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-
+import { useAuth } from "../services/AuthContext";
 
 const Login: React.FC = () => {      
     const navigate = useNavigate();
+    const { user,loading } = useAuth();
     const [log, setLog] = useState("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [error, setError] = useState("");
 
+    //redirect to dashboard
+    useEffect(() => {
+        if (!loading && user) {
+            navigate("/dashboard");
+        }
+    }, [user, loading, navigate]);
+
+      const showSuccessToast = (title: string, description: string) => {
+        addToast({
+          title,
+          description,
+          variant: "flat", 
+          color: "success", 
+        });
+      };
+      
+      const showErrorToast = (title: string, description: string) => {
+        addToast({
+          title,
+          description,
+          variant: "solid", 
+          color: "danger", 
+        });
+      };
+      
     // Handle Form Submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
 
         if (log === "signup" && password !== confirmPassword) {
-            setError("Passwords do not match!");
+            showErrorToast("Error", "Passwords do not match!");
             return;
         }
 
         try {
             if (log === "signup") {
                 await createUserWithEmailAndPassword(auth, email, password);
-                alert("Account created successfully!");
+                showSuccessToast("Success", "Account created! Please log in.");
                 setLog("login");
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
-                alert("Logged in successfully!");
                 navigate('/dashboard')
             }
-        } catch (err: any) {
-            setError(err.message);
+        } catch (error: any) {
+            let message = "Something went wrong. Please try again.";
+            switch (error.code) {
+                case "auth/email-already-in-use":
+                  message = "Email already exists! Try logging in.";
+                  break;
+                case "auth/invalid-credential":
+                  message= "Incorrect email or password";
+                  break;
+                case "auth/user-not-found":
+                  message = "User not found! Please sign up.";
+                  break;
+                case "auth/weak-password":
+                  message = "Password should be at least 6 characters.";
+                  break;
+            }
+            showErrorToast("", message);
         }
     };
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
+            <ToastProvider
+                toastProps={{
+                radius: "md",
+                color: "secondary",
+                timeout: 3000,
+                classNames: {
+                    closeButton: "opacity-5 absolute right-4 top-1/2 -translate-y-1/2",
+                },
+                }}
+                placement="top-center"
+                toastOffset={60}
+            />
             <div className='w-full max-w-md p-8 bg-white rounded-2xl shadow-lg'>
                 <h1 className='text-center text-xl mb-8'>{log === "login" ? "Login Page!" : "Signup Page!"}</h1>
                 
-                {error && <p className="text-red-500 text-center">{error}</p>}
-
                 <Form className='flex flex-col gap-5 justify-center items-center' onSubmit={handleSubmit}>
                     <Input label="Email" type="email" variant="flat" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     <Input label="Password" type="password" variant="flat" value={password} onChange={(e) => setPassword(e.target.value)} required />
@@ -59,9 +107,15 @@ const Login: React.FC = () => {
 
                     <p>
                         {log === "login" ? 
-                            <>Don't have an account? <a href="#" className='text-blue-500' onClick={() => setLog("signup")}>Signup</a></>
+                            <>
+                                Don't have an account? 
+                                <Button className='text-blue-500 bg-transparent' onPress={() => setLog("signup")}>Signup</Button>
+                            </>
                             :
-                            <>Already have an account? <a href="#" className='text-blue-500' onClick={() => setLog("login")}>Login</a></>
+                            <>
+                                Already have an account? 
+                                <Button className='text-blue-500  bg-transparent ' onPress={() => setLog("login")}>Login</Button>
+                            </>
                         }
                     </p>
                 </Form>
