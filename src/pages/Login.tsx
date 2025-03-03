@@ -15,12 +15,21 @@ const Login: React.FC = () => {
 
     //redirect to dashboard
     useEffect(() => {
+        
         if (!loading && user) {
-            navigate("/dashboard");
+            //after creating an account it will render the login page 
+            if(log=="signup"){
+                setLog("login");
+                navigate("/");
+            }
+            else{
+                navigate("/dashboard");
+            }
         }
+        
     }, [user, loading, navigate]);
 
-      const showSuccessToast = (title: string, description: string) => {
+    const showSuccessToast = (title: string, description: string) => {
         addToast({
           title,
           description,
@@ -38,7 +47,7 @@ const Login: React.FC = () => {
         });
       };
       
-    // Handle Form Submission
+    // handle Form Submission
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -51,10 +60,10 @@ const Login: React.FC = () => {
             if (log === "signup") {
                 await createUserWithEmailAndPassword(auth, email, password);
                 showSuccessToast("Success", "Account created! Please log in.");
-                setLog("login");
+                navigate('/');        
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
-                navigate('/dashboard')
+                navigate('/dashboard');
             }
         } catch (error: any) {
             let message = "Something went wrong. Please try again.";
@@ -75,7 +84,7 @@ const Login: React.FC = () => {
             showErrorToast("", message);
         }
     };
-
+    console.log(log);
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
             <ToastProvider
