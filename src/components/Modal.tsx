@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+
 import {
   Modal,
   ModalContent,
@@ -37,6 +39,16 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ isOpen, onClose, onAd
   const [address, setAddress] = useState("");
   const [isActive, setIsActive] = useState(true);
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<Student>();
+
+  // const onSubmit = (data: Student) => {
+  //   alert(JSON.stringify(data));
+  // }; 
+
   useEffect(() => {
     if (studentData) {
       setName(studentData.name);
@@ -58,8 +70,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ isOpen, onClose, onAd
     }
   }, [studentData,isOpen]);
 
-  const handleAddStudent = async(event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleAddStudent: SubmitHandler<Student> = async() => {
     if (!name || !gender || !phone || !email || !address) {
       alert("All fields are required.");
       return;
@@ -81,15 +92,27 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ isOpen, onClose, onAd
           <>
             <ModalHeader className="flex flex-col gap-1">{studentData ? "Edit Student" : "Add New Student"}</ModalHeader>
             <ModalBody>
-              <Form onSubmit={handleAddStudent} className="flex flex-col gap-2">
+              <Form onSubmit={handleSubmit(handleAddStudent)} className="flex flex-col gap-2">
               <Input
                 label="Name"
+                isRequired
                 placeholder="Enter your name"
                 value={name}
+                {...register("name", {
+                  required: "Name is required",
+                  minLength: { value: 3, message: "At least 3 characters" },
+                  maxLength: { value: 20, message: "Name cannot exceed 20 characters" },
+                  pattern: {
+                    value: /^[A-Za-z\s]+$/i,
+                    message: "Only letters and spaces allowed",
+                  },
+                })}
                 labelPlacement="outside"
                 onChange={(e) => setName(e.target.value)}
-                isRequired
               />
+
+              {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+
               <Select
                 isRequired
                 label="Gender"
@@ -102,41 +125,72 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({ isOpen, onClose, onAd
                 <SelectItem key="female">Female</SelectItem>
                 <SelectItem key="other">Other</SelectItem>
               </Select>
+
               <Input
                 label="Phone"
                 placeholder="Enter phone"
                 value={phone}
+                {...register("phone", {
+                  required: "Phone is required",
+                  pattern: {
+                    value: /^[0-9]{10}$/i,
+                    message: "Phone number must be exactly 10 digits",
+                  },
+                })}
                 labelPlacement="outside"
                 onChange={(e) => setPhone(e.target.value)}
                 isRequired
                 type="number"
               />
+              {errors.phone && <p className="text-red-500">{errors.phone.message}</p>}
+
               <Input
                 label="Email"
                 placeholder="Enter email"
                 value={email}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Invalid email format",
+                  },
+                })}
                 labelPlacement="outside"
                 onChange={(e) => setEmail(e.target.value)}
                 isRequired
                 type="email"
               />
+              {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+              
               <Input
                 label="Address"
                 placeholder="Enter address"
                 value={address}
+                {...register("address", {
+                  required: "Address is required",
+                  minLength: { value: 3, message: "At least 3 characters" },
+                })}
                 labelPlacement="outside"
                 onChange={(e) => setAddress(e.target.value)}
                 isRequired
               />
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isActive}
-                  className="size-4 mr-2"
-                  onChange={(e) => setIsActive(e.target.checked)}
-                />
-                Active
-              </label>
+              {errors.address && <p className="text-red-500">{errors.address.message}</p>}
+
+              <Select
+                  isRequired
+                  label="Is Active"
+                  labelPlacement="outside"
+                  selectedKeys={isActive ? ["active"] : ["inactive"]}
+                  placeholder="Select one"
+                  onSelectionChange={(selected) => {
+                    const value = Array.from(selected)[0] as string;
+                    setIsActive(value === "active");
+                  }}
+                >
+                  <SelectItem key="active">Active</SelectItem>
+                  <SelectItem key="inactive">Inactive</SelectItem>
+              </Select>
+
               <div className="ml-auto">
                 <Button
                   type="submit"
