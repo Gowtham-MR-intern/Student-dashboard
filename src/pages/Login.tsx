@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input, addToast, ToastProvider } from '@heroui/react';
-import { auth } from './firebaseconfiguration';
+import { auth } from './FirebaseConfiguration';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuth } from "../services/AuthContext";
 
@@ -13,7 +13,6 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    //redirect to dashboard
     useEffect(() => {
         
         if (!loading && user) {
@@ -23,7 +22,7 @@ const Login: React.FC = () => {
                 navigate("/");
             }
             else{
-                navigate("/dashboard");
+                navigate("/home");
             }
         }
         
@@ -63,7 +62,7 @@ const Login: React.FC = () => {
                 navigate('/');        
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
-                navigate('/dashboard');
+                navigate('/home');
             }
         } catch (error: any) {
             let message = "Something went wrong. Please try again.";

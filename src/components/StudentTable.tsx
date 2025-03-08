@@ -19,7 +19,7 @@ import {
   SortDescriptor,
   Spinner
 } from "@heroui/react";
-import { db } from "../pages/firebaseconfiguration";
+import { db } from "../pages/FirebaseConfiguration";
 import { capitalize } from "lodash";
 import { collection, addDoc, deleteDoc, updateDoc, doc, getDocs } from "firebase/firestore";
 import AddStudentModal from "./Modal";
